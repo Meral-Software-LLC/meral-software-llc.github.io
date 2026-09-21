@@ -1,6 +1,6 @@
 import os, pathlib
 ROOT = pathlib.Path(__file__).parent
-EMAIL = "support@meralsoftware.example"  # replaced once the owner confirms
+EMAIL = "support@meralsoftware.com"  # replaced once the owner confirms
 COMPANY = "Meral Software LLC"
 DATE = "September 20, 2026"
 
