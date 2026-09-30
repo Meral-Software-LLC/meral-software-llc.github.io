@@ -60,29 +60,30 @@ def shell(title, body, depth=0, desc="", active=""):
 <meta name="description" content="{desc}">
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{desc}">
-<meta name="theme-color" content="#0b0c10">
+<meta name="theme-color" content="#f7f6f2">
 <link rel="icon" href="{up}favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{up}style.css">
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
 <header class="site">
-  <a class="brand" href="{up}"><span class="mark">{icon('cube',18)}</span>{COMPANY}</a>
-  <nav>
-    <a href="{up}#apps" class="{'active' if active=='apps' else ''}">Apps</a>
-    <a href="{up}#principles">Principles</a>
+  <a class="brand" href="{up or './'}"><img class="brand-logo" src="{up}logo-mark.svg" width="36" height="36" alt="">{COMPANY}</a>
+  <nav aria-label="Main navigation">
+    <a href="{up}#apps" class="{'active' if active=='apps' else ''}">Products</a>
+    <a href="{up}#principles">Our approach</a>
     <a href="{up}support.html" class="{'active' if active=='support' else ''}">Support</a>
   </nav>
 </header>
-<main>
+<main id="main">
 {body}
 </main>
 <footer class="site">
   <div class="cols">
     <div>
-      <a class="brand" href="{up}"><span class="mark">{icon('cube',18)}</span>{COMPANY}</a>
+      <a class="brand" href="{up or './'}"><img class="brand-logo" src="{up}logo-mark.svg" width="36" height="36" alt="">{COMPANY}</a>
       <p class="muted">Apps and software for property and for play, from Meral Software.</p>
     </div>
     <div>
@@ -141,42 +142,47 @@ def privacy_body(app=None):
 </article>
 """
 
+def product_art(a):
+    if a['slug'] == 'marketplace':
+        return '<div class="house-scene" aria-hidden="true"><span class="sun"></span><div class="house"><div class="roof"></div><div class="house-wall"><i></i><i></i><b></b></div></div><div class="listing-label"><span class="status-dot"></span> A place to call home <span>↗</span></div></div>'
+    if a['slug'] == 'management':
+        return '<div class="dashboard-art" aria-hidden="true"><div class="dash-sidebar"><b>M</b><i></i><i></i><i></i></div><div class="dash-main"><span class="dash-heading">Your properties, connected.</span><div class="dash-stats"><div><small>Properties</small><b>12</b></div><div><small>Occupancy</small><b>94<span>%</span></b></div></div><div class="chart">'+''.join(f'<i style="--height:{h}%"></i>' for h in [30,46,39,60,51,72,64,85,76,96])+'</div><div class="dash-lines"><i></i><i></i></div></div></div>'
+    return '<div class="cube-scene" aria-hidden="true"><div class="cube-art">'+''.join('<i></i>' for _ in range(9))+'</div><span class="cube-orbit orbit-one"></span><span class="cube-orbit orbit-two"></span><span class="cube-spark">✦</span><span class="cube-caption">Your next aha moment.</span></div>'
+
 def app_card(a):
-    status = '' if a["live"] else '<span class="pill">Coming soon</span>'
-    return f"""<a class="card" href="{href(a)}">
-  <div class="card-top"><span class="glyph">{icon(a['icon'])}</span>{status}</div>
-  <h3>{a['name']}</h3>
-  <p>{a['tag']}</p>
-  <span class="meta">{a['platform']}</span>
-</a>"""
+    category = {'marketplace':'FIND YOUR PLACE', 'management':'MANAGE WITH CLARITY', 'opencube':'MAKE YOUR NEXT MOVE'}.get(a['slug'], 'EXPLORE SOMETHING NEW')
+    action = 'Explore the app' if not a.get('url') else 'Visit the platform'
+    status = '' if a['live'] else '<span class="pill">Coming soon</span>'
+    return f"""<a class="product-card {a['slug']}" href="{href(a)}">
+      <div class="product-art">{product_art(a)}{status}</div>
+      <div class="product-copy"><p class="product-category">{category}</p><h3>{a['name']}</h3><p>{a['tag']}</p><div class="product-bottom"><span class="meta">{a['platform']}</span><span class="product-arrow" aria-hidden="true">↗</span></div><span class="product-action">{action} <span aria-hidden="true">↗</span></span></div>
+    </a>"""
 
 # ---------- index ----------
 live = [a for a in APPS if a["live"]]
 hero_app = next(a for a in APPS if a["slug"] == "opencube")
 index = f"""
-<section class="hero">
-  <p class="eyebrow">Independent software studio</p>
-  <h1>Software for property, and a few good apps.</h1>
-  <p class="lead">We build Meral Property, a marketplace and management software for landlords, tenants and vendors, alongside focused consumer apps such as OpenCube.</p>
-  <p class="actions"><a class="btn primary" href="#apps">See our products</a> <a class="btn" href="{hero_app['slug']}/">{hero_app['name']}, our latest app ↗</a></p>
+<section class="hero studio-hero">
+  <div class="hero-copy"><p class="eyebrow"><span class="status-dot"></span> Independent minds. Thoughtful software.</p>
+  <h1>Big ideas.<br>Useful software.<br><span>A little more color.</span></h1>
+  <p class="lead">From finding your next home to solving your next cube. We make software that brings a little clarity to your everyday.</p>
+  <div class="actions"><a class="btn primary" href="#apps">Explore our products <span aria-hidden="true">↗</span></a><a class="text-link" href="#principles">Meet Meral <span aria-hidden="true">↓</span></a></div>
+  <p class="hero-note">Built for real life. Made by Meral Software.</p></div>
+  <div class="hero-art" aria-hidden="true"><div class="art-grid"></div><span class="art-caption">A small studio. A world of possibilities.</span><div class="art-tile tile-property">{icon('building',48)}<span>Spaces to thrive.</span></div><div class="art-tile tile-cube">{icon('cube',62)}<span>Room to play.</span></div><div class="art-tile tile-spark">✳</div><span class="art-label">IDEAS → EVERYDAY</span><span class="art-dot"></span></div>
 </section>
-
-<section id="apps" class="section">
-  <div class="section-head"><h2>Our products</h2><p class="muted">One job each, done properly.</p></div>
-  <div class="grid">{''.join(app_card(a) for a in APPS)}</div>
+<section id="apps" class="section products-section">
+  <div class="section-head"><div><p class="eyebrow">THE MERAL COLLECTION</p><h2>Good tools. Great possibilities.</h2></div><p class="muted">For the practical.<br>And the playful.</p></div>
+  <div class="product-grid">{''.join(app_card(a) for a in APPS)}</div>
+  <div class="collection-note"><span class="mini-spark" aria-hidden="true">✳</span><p>A growing collection of thoughtful software.<br><span class="muted">More ideas are taking shape. Stay curious.</span></p><a href="mailto:{EMAIL}">Have an idea? Say hello <span aria-hidden="true">↗</span></a></div>
 </section>
-
-<section id="principles" class="section">
-  <div class="section-head"><h2>How we build</h2><p class="muted">The same three rules in everything we make.</p></div>
-  <div class="principles">
-    <div><h3>Focused</h3><p>Each product does one job and does it properly.</p></div>
-    <div><h3>Clear about data</h3><p>Every product has its own privacy policy that says exactly what it collects and why.</p></div>
-    <div><h3>Native where it counts</h3><p>Swift and SwiftUI on Apple platforms, fast web apps for property, built to feel at home on each device.</p></div>
-  </div>
+<section id="principles" class="section approach-section">
+  <div class="section-head"><div><p class="eyebrow">OUR APPROACH</p><h2>Small studio.<br>High standards.</h2></div><p class="approach-intro">Different products. The same care.<br>We build things we’re proud to put our name on.</p></div>
+  <div class="principles"><div><span class="principle-number">01 /</span><h3>Purpose comes first.</h3><p>Every product starts with a real need. We keep the experience focused, so you can get on with what matters.</p></div><div><span class="principle-number">02 /</span><h3>Clarity, always.</h3><p>Simple experiences and clear privacy policies. You should understand your software, and what happens to your data.</p></div><div><span class="principle-number">03 /</span><h3>At home on your device.</h3><p>Native Apple apps and fast web platforms. Thoughtful details that make every interaction feel right.</p></div></div>
 </section>
+<section class="contact-banner"><div><p class="eyebrow">LET’S TALK</p><h2>Good software starts<br>with a conversation.</h2></div><a class="btn" href="mailto:{EMAIL}">Say hello <span aria-hidden="true">↗</span></a></section>
 """
 (ROOT/"index.html").write_text(shell(f"{COMPANY} · Property software and apps", index, 0,
-    "Meral Software builds Meral Property, a property marketplace and management software, and focused apps such as OpenCube.", active="apps"))
+    "Meral Software builds Meral Property, a property marketplace and management software, and focused apps such as OpenCube.", active="apps"), encoding="utf-8")
 
 # ---------- support ----------
 support = f"""
@@ -190,20 +196,20 @@ support = f"""
 <p>App Store purchases are handled by Apple. To restore a purchase on a new device, open the app's settings and tap Restore Purchases. For refunds, use <a href="https://reportaproblem.apple.com">reportaproblem.apple.com</a>; Apple decides those, not us.</p>
 </article>
 """
-(ROOT/"support.html").write_text(shell(f"Support · {COMPANY}", support, 0, "Support for Meral Software apps.", active="support"))
-(ROOT/"privacy.html").write_text(shell(f"Privacy · {COMPANY}", privacy_body(), 0, "Privacy policies for Meral Software products."))
+(ROOT/"support.html").write_text(shell(f"Support · {COMPANY}", support, 0, "Support for Meral Software apps.", active="support"), encoding="utf-8")
+(ROOT/"privacy.html").write_text(shell(f"Privacy · {COMPANY}", privacy_body(), 0, "Privacy policies for Meral Software products."), encoding="utf-8")
 
 # ---------- per app ----------
 for a in APPS:
     if a.get("url"): continue
     d = ROOT/a["slug"]; d.mkdir(exist_ok=True)
     body = f"""
-<section class="hero app-hero">
+<section class="hero app-hero"><div class="app-intro">
   <span class="glyph large">{icon(a['icon'], 36)}</span>
   <p class="eyebrow">{a['platform']}</p>
   <h1>{a['name']}</h1>
   <p class="lead">{a['tag']}</p>
-  <p class="actions">{store_link(a)} <a class="btn" href="#support">Support</a></p>
+  <p class="actions">{store_link(a)} <a class="btn" href="#support">Support</a></p></div><div class="app-visual opencube">{product_art(a)}</div>
 </section>
 <section class="section two-col">
   <div>
@@ -230,102 +236,10 @@ for a in APPS:
   <ul>{''.join(f'<li><strong>{p}</strong> — {t}</li>' for p,t in a['perms'])}</ul>
 </section>
 """
-    (d/"index.html").write_text(shell(f"{a['name']} · {COMPANY}", body, 1, f"{a['name']}: {a['tag']} By {COMPANY}."))
-    (d/"privacy.html").write_text(shell(f"{a['name']} privacy policy · {COMPANY}", privacy_body(a), 1, f"Privacy policy for {a['name']}: no data collected."))
+    (d/"index.html").write_text(shell(f"{a['name']} · {COMPANY}", body, 1, f"{a['name']}: {a['tag']} By {COMPANY}."), encoding="utf-8")
+    (d/"privacy.html").write_text(shell(f"{a['name']} privacy policy · {COMPANY}", privacy_body(a), 1, f"Privacy policy for {a['name']}: no data collected."), encoding="utf-8")
 
 # ---------- assets ----------
-(ROOT/"favicon.svg").write_text(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect width="24" height="24" rx="6" fill="#0b0c10"/><g fill="none" stroke="#4cd964" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" transform="translate(2 2) scale(.84)">{ICONS["cube"]}</g></svg>')
-(ROOT/"style.css").write_text("""
-:root{
-  --bg:#0b0c10;--bg2:#101218;--surface:#151821;--line:#232733;--fg:#f4f5f7;--fg2:#a6abb8;--muted:#7b8090;
-  --accent:#4cd964;--accent-ink:#06210c;--radius:18px;--max:1080px;
-}
-@media(prefers-color-scheme:light){:root{--bg:#fbfbfc;--bg2:#f3f4f7;--surface:#fff;--line:#e6e8ee;--fg:#111318;--fg2:#4d5260;--muted:#767b89;--accent:#1f9d3d;--accent-ink:#fff}}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 Inter,-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
-a{color:var(--accent);text-decoration:none}
-a:hover{text-decoration:underline}
-h1,h2,h3,h4{letter-spacing:-.02em;line-height:1.15;margin:0}
-p{margin:0 0 1em}
-.muted{color:var(--muted)}
-.eyebrow{font-size:.8rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
-
-/* header */
-header.site{max-width:var(--max);margin:0 auto;padding:22px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
-.brand{display:inline-flex;align-items:center;gap:10px;font-weight:700;color:var(--fg);font-size:1.02rem}
-.brand:hover{text-decoration:none}
-.mark{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:9px;background:var(--accent);color:var(--accent-ink)}
-header nav{display:flex;gap:26px}
-header nav a{color:var(--fg2);font-weight:500;font-size:.95rem}
-header nav a:hover,header nav a.active{color:var(--fg);text-decoration:none}
-
-/* layout */
-main{max-width:var(--max);margin:0 auto;padding:0 24px 40px}
-.section{padding:56px 0}
-.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:28px}
-.section-head h2,.section h2{font-size:1.75rem}
-.section h2{margin:32px 0 10px}
-.section h2:first-child{margin-top:0}
-.section h3{font-size:1.05rem;margin:22px 0 6px}
-
-/* hero */
-.hero{padding:72px 0 40px;max-width:720px}
-.hero h1{font-size:clamp(2.4rem,6vw,4rem);font-weight:700;margin-bottom:18px}
-.lead{font-size:1.2rem;color:var(--fg2);max-width:640px}
-.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;font-weight:600;font-size:.95rem;border:1px solid var(--line);color:var(--fg);background:var(--surface)}
-.btn:hover{text-decoration:none;border-color:var(--muted)}
-.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-.btn.disabled{color:var(--muted);cursor:default}
-
-/* app grid */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
-.card{display:flex;flex-direction:column;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px;color:var(--fg);transition:transform .15s ease,border-color .15s ease}
-.card:hover{text-decoration:none;transform:translateY(-2px);border-color:var(--muted)}
-.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
-.glyph{display:inline-grid;place-items:center;width:52px;height:52px;border-radius:14px;background:var(--bg2);border:1px solid var(--line);color:var(--accent)}
-.glyph.large{width:72px;height:72px;border-radius:20px;margin-bottom:22px}
-.card h3{font-size:1.15rem}
-.card p{color:var(--fg2);margin:0}
-.card .meta{color:var(--muted);font-size:.85rem;margin-top:auto;padding-top:14px}
-.pill{font-size:.72rem;font-weight:600;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 9px;white-space:nowrap}
-
-/* principles */
-.principles{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:28px 32px}
-.principles h3{font-size:1.05rem;margin:0 0 6px}
-.principles p{color:var(--fg2);margin:0}
-
-/* app page */
-.app-hero{padding-top:48px}
-.two-col{display:grid;grid-template-columns:1fr 280px;gap:40px;align-items:start}
-@media(max-width:760px){.two-col{grid-template-columns:1fr}}
-.features{padding-left:20px;margin:12px 0 0;color:var(--fg2)}
-.features li{margin:6px 0}
-.facts{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px}
-.facts dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:10px 16px;font-size:.95rem}
-.facts dt{color:var(--muted)}
-.facts dd{margin:0;font-weight:500}
-
-/* docs */
-.doc{max-width:720px;padding:48px 0}
-.doc h1{font-size:clamp(2rem,5vw,2.75rem);margin-bottom:10px}
-.doc h2{font-size:1.25rem;margin:36px 0 8px}
-.doc ul{padding-left:20px}
-.doc li{margin:6px 0}
-.linklist{list-style:none;padding:0}
-.linklist li{padding:10px 0;border-bottom:1px solid var(--line)}
-.linklist a{font-weight:600;color:var(--fg)}
-
-/* footer */
-footer.site{max-width:var(--max);margin:0 auto;padding:40px 24px 48px;border-top:1px solid var(--line)}
-footer .cols{display:grid;grid-template-columns:2fr 1fr 1fr;gap:32px}
-@media(max-width:640px){footer .cols{grid-template-columns:1fr}}
-footer h4{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:10px}
-footer .cols a{display:block;color:var(--fg2);padding:3px 0;font-size:.95rem}
-footer .cols a.brand{display:inline-flex;color:var(--fg);margin-bottom:12px}
-footer .muted{max-width:320px;font-size:.95rem}
-footer .legal{color:var(--muted);font-size:.8rem;margin:32px 0 0}
-""")
-(ROOT/".nojekyll").write_text("")
+(ROOT/"favicon.svg").write_text((ROOT/"logo-mark.svg").read_text(encoding="utf-8"), encoding="utf-8")
+(ROOT/".nojekyll").write_text("", encoding="utf-8")
 print("generated", len(APPS), "apps")
