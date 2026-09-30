@@ -12,6 +12,8 @@ STORE = "https://apps.apple.com/app/id{id}"
 
 # Simple line icons, 24x24 viewBox, stroke = currentColor.
 ICONS = {
+ "store": '<path d="M3 10 5 4h14l2 6"/><path d="M3 10a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/><path d="M5 12v8h14v-8M10 20v-5h4v5"/>',
+ "building": '<rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2M11 21v-3h2v3"/>',
  "cube":  '<path d="M12 3 4 7v10l8 4 8-4V7l-8-4z"/><path d="M4 7l8 4 8-4M12 11v10"/>',
  "box":   '<path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8M7.5 5.5l9 5"/>',
  "frame": '<rect x="4" y="4" width="16" height="16" rx="1.5"/><rect x="8" y="8" width="8" height="8"/><path d="M12 2v2"/>',
@@ -22,49 +24,20 @@ ICONS = {
 }
 
 APPS = [
+ dict(slug="marketplace", name="Meral Property Marketplace", icon="store", live=True, url="https://meralproperty.com", privacy="https://meralproperty.com/privacy/",
+      platform="Web", tag="Find your next rental, or list your own."),
+ dict(slug="management", name="Meral Property Management", icon="building", live=True, url="https://pro.meralproperty.com", privacy="https://pro.meralproperty.com/privacy/",
+      platform="Web · iOS · Android · Desktop", tag="Property management software for owners, tenants and vendors."),
  dict(slug="opencube", name="OpenCube", icon="cube", live=True, store_id="6814315632",
       platform="iPhone · iPad", price="Free", unlock="OpenCube Pro, $1.99 once",
       tag="Scan, solve and learn the cube.",
       blurb="Point the camera at your cube and OpenCube reads it, shows a short solution, and teaches Beginner, CFOP and Roux step by step. A solve timer with scrambles, inspection and per-method statistics rounds it out. Seven languages, no internet required.",
       features=["Reads all six faces through the camera","Short solutions from a two-phase solver","Beginner, CFOP and Roux lessons with 3D animations","Timer with scrambles, inspection and per-method stats"],
       perms=[("Camera","used only to read the colours on your cube while you scan. Frames are processed live and never stored or sent anywhere.")]),
- dict(slug="openpack", name="OpenPack", icon="box", live=False, store_id=None,
-      platform="iPhone with LiDAR", price="Free", unlock="$4.99 once",
-      tag="Will it fit? Scan both and find out.",
-      blurb="OpenPack measures an object and a space with the LiDAR scanner, then tells you whether one fits in the other, with a 3D preview you can turn.",
-      features=["Scan any object into a measured 3D shape","Scan a trunk, bin, doorway or shelf","A clear yes or no, with the preview to prove it"],
-      perms=[("Camera and LiDAR","used to measure objects and spaces on the device. Scans are stored only on your device.")]),
- dict(slug="hang", name="Hang", icon="frame", live=False, store_id=None,
-      platform="iPhone with LiDAR", price="Free", unlock="$4.99 once",
-      tag="Hang pictures straight, first time.",
-      blurb="Scan a wall, arrange your frames to scale, and get exact nail positions with a live level guide while you hammer.",
-      features=["Scan the wall and lay out frames to scale","Nail positions in centimetres or inches","Live level guide"],
-      perms=[("Camera and LiDAR","used to measure your wall on the device."),("Motion sensors","used for the level guide.")]),
- dict(slug="pocketsight", name="PocketSight", icon="cue", live=False, store_id=None,
-      platform="iPhone", price="Free", unlock="$4.99 once",
-      tag="See the shot before you take it.",
-      blurb="A live aiming overlay for pool, drawn over the real table through your camera: ghost ball, aiming line and predicted path.",
-      features=["Ghost-ball aiming line over the real table","Predicted path for object and cue ball","Hide-the-line drill to train your eye"],
-      perms=[("Camera","used to see the table and balls. Frames are processed live on the device and never stored or sent anywhere.")]),
- dict(slug="marginalia", name="Marginalia", icon="book", live=False, store_id=None,
-      platform="iPad · Mac", price="Free", unlock="$9.99 once",
-      tag="Ask the page a question, in your own handwriting.",
-      blurb="A PDF reader for iPad. Handwrite a question in the margin and get an answer grounded only in that document, with page citations, entirely on the device.",
-      features=["A proper PDF reader with Apple Pencil annotation","Handwritten questions, cited answers","Nothing leaves the iPad"],
-      perms=[("Files","you choose which PDFs to open; they are indexed and stored only on your device.")]),
- dict(slug="punch", name="Punch", icon="glove", live=False, store_id=None,
-      platform="Apple Watch", price="Free", unlock="$4.99 once",
-      tag="Bag work, counted by your watch.",
-      blurb="Counts and classifies punches from Apple Watch motion during bag work, with per-round fatigue trends. No straps, no trackers.",
-      features=["Punch count from the watch alone","Jab, cross, hook and uppercut","Per-round fatigue drop-off"],
-      perms=[("Motion sensors","read on the watch during a session."),("Health","Punch can record workouts to the Health app if you allow it. Health data is never read for any other purpose and never leaves your device.")]),
- dict(slug="tempomaster", name="TempoMaster", icon="golf", live=False, store_id=None,
-      platform="Apple Watch · iPhone", price="Free", unlock="$3.99 once",
-      tag="A steady putting stroke, from your wrist.",
-      blurb="Measures putting tempo and face rotation from Apple Watch motion, with a haptic tempo trainer and a progress view on the phone.",
-      features=["Back-to-forward tempo ratio for every stroke","Face rotation and consistency","Haptic tempo trainer on the wrist"],
-      perms=[("Motion sensors","read on the watch during practice."),("Health","TempoMaster can record workouts to the Health app if you allow it. Health data never leaves your device.")]),
 ]
+
+def href(a, up=""):
+    return a.get("url") or f'{up}{a["slug"]}/'
 
 def icon(name, size=28):
     return f'<svg class="icon" width="{size}" height="{size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{ICONS[name]}</svg>'
@@ -110,11 +83,11 @@ def shell(title, body, depth=0, desc="", active=""):
   <div class="cols">
     <div>
       <a class="brand" href="{up}"><span class="mark">{icon('cube',18)}</span>{COMPANY}</a>
-      <p class="muted">Focused apps for iPhone, iPad and Apple Watch that work entirely on your device.</p>
+      <p class="muted">Apps and software for property and for play, from Meral Software.</p>
     </div>
     <div>
       <h4>Apps</h4>
-      {''.join(f'<a href="{up}{a["slug"]}/">{a["name"]}</a>' for a in APPS)}
+      {''.join(f'<a href="{href(a, up)}">{a["name"]}</a>' for a in APPS)}
     </div>
     <div>
       <h4>Company</h4>
@@ -135,14 +108,24 @@ def privacy_body(app=None):
         perms = "<h2>Device permissions</h2><ul>" + "".join(f"<li><strong>{p}</strong> — {t}</li>" for p,t in app["perms"]) + "</ul>"
         paid = f"<h2>Purchases</h2><p>{app['name']} is free to download. A single one-time purchase ({app['unlock']}) unlocks the full app. Payment is handled entirely by Apple through the App Store. We never see your payment details and receive no personal information from a purchase.</p>"
     else:
-        paid = "<h2>Purchases</h2><p>Our apps are free to download and each offers one single one-time purchase. Payment is handled entirely by Apple through the App Store. We never see your payment details and receive no personal information from a purchase.</p>"
-    subject = app["name"] if app else "Our apps"
+        return f"""
+<article class="doc">
+<p class="eyebrow">Privacy</p>
+<h1>Privacy policies</h1>
+<p class="muted">Last updated {DATE}</p>
+<p>Each Meral Software product has its own privacy policy describing what it collects and why.</p>
+<ul class="linklist">{''.join(f'<li><a href="{a.get("privacy") or href(a)+"privacy.html"}">{a["name"]}</a> <span class="muted">— {a["tag"]}</span></li>' for a in APPS)}</ul>
+<h2>Contact</h2>
+<p>Questions? Email <a href="mailto:{EMAIL}">{EMAIL}</a>.</p>
+</article>
+"""
+    subject = app["name"]
     return f"""
 <article class="doc">
 <p class="eyebrow">Privacy policy{' · '+app['name'] if app else ''}</p>
 <h1>{subject} collect{'s' if app else ''} no data.</h1>
 <p class="muted">Last updated {DATE}</p>
-<p>Not usage analytics, not crash reports, not an email address. There are no accounts to create and no servers to talk to. Every one of our apps works entirely on your device and works without an internet connection.</p>
+<p>Not usage analytics, not crash reports, not an email address. The app works entirely on your device and works without an internet connection.</p>
 <h2>What stays on your device</h2>
 <p>Anything the app saves, such as your history, settings or scans, is stored only in the app's own storage on your device and in your device backups if you have those turned on. Delete the app and it is gone.</p>
 {perms}
@@ -160,7 +143,7 @@ def privacy_body(app=None):
 
 def app_card(a):
     status = '' if a["live"] else '<span class="pill">Coming soon</span>'
-    return f"""<a class="card" href="{a['slug']}/">
+    return f"""<a class="card" href="{href(a)}">
   <div class="card-top"><span class="glyph">{icon(a['icon'])}</span>{status}</div>
   <h3>{a['name']}</h3>
   <p>{a['tag']}</p>
@@ -169,50 +152,50 @@ def app_card(a):
 
 # ---------- index ----------
 live = [a for a in APPS if a["live"]]
-hero_app = live[0] if live else APPS[0]
+hero_app = next(a for a in APPS if a["slug"] == "opencube")
 index = f"""
 <section class="hero">
   <p class="eyebrow">Independent software studio</p>
-  <h1>Apps that stay on your device.</h1>
-  <p class="lead">We make small, focused apps for iPhone, iPad and Apple Watch. No accounts, no subscriptions, no data collection. Download for free, pay once if you want more.</p>
-  <p class="actions"><a class="btn primary" href="#apps">See the apps</a> <a class="btn" href="{hero_app['slug']}/">{hero_app['name']}, our latest {'↗' if hero_app['live'] else ''}</a></p>
+  <h1>Software for property, and a few good apps.</h1>
+  <p class="lead">We build Meral Property, a marketplace and management software for landlords, tenants and vendors, alongside focused consumer apps such as OpenCube.</p>
+  <p class="actions"><a class="btn primary" href="#apps">See our products</a> <a class="btn" href="{hero_app['slug']}/">{hero_app['name']}, our latest app ↗</a></p>
 </section>
 
 <section id="apps" class="section">
-  <div class="section-head"><h2>The apps</h2><p class="muted">One job each, done properly.</p></div>
+  <div class="section-head"><h2>Our products</h2><p class="muted">One job each, done properly.</p></div>
   <div class="grid">{''.join(app_card(a) for a in APPS)}</div>
 </section>
 
 <section id="principles" class="section">
-  <div class="section-head"><h2>How we build</h2><p class="muted">The same four rules in every app.</p></div>
+  <div class="section-head"><h2>How we build</h2><p class="muted">The same three rules in everything we make.</p></div>
   <div class="principles">
-    <div><h3>On device, always</h3><p>Camera, LiDAR and motion data are processed on the phone or watch and never uploaded. Every app works in airplane mode.</p></div>
-    <div><h3>No accounts</h3><p>Nothing to sign up for, nothing to remember. Open the app and use it.</p></div>
-    <div><h3>Pay once</h3><p>Each app is free to try and has one purchase that unlocks it forever. No subscriptions, no ads, no tip jars.</p></div>
-    <div><h3>Native to Apple platforms</h3><p>Built with Swift and SwiftUI, using the sensors and frameworks each device already has. Fast, small and at home on your device.</p></div>
+    <div><h3>Focused</h3><p>Each product does one job and does it properly.</p></div>
+    <div><h3>Clear about data</h3><p>Every product has its own privacy policy that says exactly what it collects and why.</p></div>
+    <div><h3>Native where it counts</h3><p>Swift and SwiftUI on Apple platforms, fast web apps for property, built to feel at home on each device.</p></div>
   </div>
 </section>
 """
-(ROOT/"index.html").write_text(shell(f"{COMPANY} · Apps that stay on your device", index, 0,
-    "Meral Software makes focused iPhone, iPad and Apple Watch apps with no accounts, no subscriptions and no data collection.", active="apps"))
+(ROOT/"index.html").write_text(shell(f"{COMPANY} · Property software and apps", index, 0,
+    "Meral Software builds Meral Property, a property marketplace and management software, and focused apps such as OpenCube.", active="apps"))
 
 # ---------- support ----------
 support = f"""
 <article class="doc">
 <p class="eyebrow">Support</p>
 <h1>We answer every message.</h1>
-<p class="lead">Email <a href="mailto:{EMAIL}">{EMAIL}</a>. Include the app, your device model and the iOS or watchOS version, and we can usually sort it out in one reply.</p>
-<h2>Per-app support pages</h2>
-<ul class="linklist">{''.join(f'<li><a href="{a["slug"]}/">{a["name"]}</a> <span class="muted">— {a["tag"]}</span></li>' for a in APPS)}</ul>
+<p class="lead">Email <a href="mailto:{EMAIL}">{EMAIL}</a>. Include the product, your device model and the OS version, and we can usually sort it out in one reply.</p>
+<h2>Products</h2>
+<ul class="linklist">{''.join(f'<li><a href="{href(a)}">{a["name"]}</a> <span class="muted">— {a["tag"]}</span></li>' for a in APPS)}</ul>
 <h2>Purchases and refunds</h2>
-<p>Purchases are handled by Apple. To restore a purchase on a new device, open the app's settings and tap Restore Purchases. For refunds, use <a href="https://reportaproblem.apple.com">reportaproblem.apple.com</a>; Apple decides those, not us.</p>
+<p>App Store purchases are handled by Apple. To restore a purchase on a new device, open the app's settings and tap Restore Purchases. For refunds, use <a href="https://reportaproblem.apple.com">reportaproblem.apple.com</a>; Apple decides those, not us.</p>
 </article>
 """
 (ROOT/"support.html").write_text(shell(f"Support · {COMPANY}", support, 0, "Support for Meral Software apps.", active="support"))
-(ROOT/"privacy.html").write_text(shell(f"Privacy · {COMPANY}", privacy_body(), 0, "Privacy policy for Meral Software apps: no data collected."))
+(ROOT/"privacy.html").write_text(shell(f"Privacy · {COMPANY}", privacy_body(), 0, "Privacy policies for Meral Software products."))
 
 # ---------- per app ----------
 for a in APPS:
+    if a.get("url"): continue
     d = ROOT/a["slug"]; d.mkdir(exist_ok=True)
     body = f"""
 <section class="hero app-hero">
